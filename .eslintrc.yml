@@ -18,5 +18,6 @@ rules:
     - always
   no-unused-vars: 0
   no-console: 0
+  no-constant-condition: 0
   prefer-const:
     - error
