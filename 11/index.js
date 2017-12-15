@@ -21,6 +21,16 @@ const follow = (start, dirs) => reduce(
   dirs
 );
 
+const max = (start, dirs) => reduce(
+  ({pos, max}, dir) => {
+    const nextPos = move(dir, pos);
+    const dist = distance(start, nextPos);
+    return {pos: nextPos, max: Math.max(max, dist)};
+  },
+  {pos: start, max: 0},
+  dirs
+);
+
 const origin = () => [0, 0, 0];
 
 // console.log(distance(
@@ -32,3 +42,5 @@ console.log('distance:', distance(
   origin(),
   follow(origin(), input)
 ));
+
+console.log('furthest:', max(origin(), input).max);
