@@ -19,34 +19,59 @@ const input = new Map(
     .map(p => program.tryParse(p))
 );
 
-const groupZero = input => {
+const groupN = (n, input) => {
   input = new Map([...input.entries()]);
-  const canZero = new Set([0]);
+  const canN = new Set([n]);
 
-  for (let pid of canZero.values()) {
+  for (let pid of canN.values()) {
     [...input.entries()]
       .filter(([newPid, outputs]) => outputs.includes(pid))
-      .forEach(([pid]) => canZero.add(pid));
+      .forEach(([pid]) => canN.add(pid));
   }
-  return canZero;
+  return canN;
 };
 
-// const example = `
-//   0 <-> 2
-//   1 <-> 1
-//   2 <-> 3, 4, 0
-//   3 <-> 2, 4
-//   4 <-> 2, 3, 6
-//   5 <-> 6
-//   6 <-> 4, 5
-// `;
-// console.log(groupZero(
-//   new Map(
-//     example
+const allGroups = input => {
+  // [{pid:number, group:Set}]
+  const all = [...input.keys()]
+    .map(pid => ({pid, group: groupN(pid, input)}));
+  const groups = [];
+
+  all.forEach(({pid, group}) => {
+    let inGroups = false;
+    groups.forEach(g => {
+      if (g.group.has(pid)) {
+        g.group = new Set([...g.group.values(), ...group.values()])
+        inGroups = true;
+      }
+    })
+    if (!inGroups) {
+      groups.push({pid, group});
+    }
+  });
+  return groups;
+};
+
+console.log('contain zero:', groupN(0, input).size);
+console.log('num groups:', allGroups(input).length);
+
+// const example = new Map(`
+//     0 <-> 2
+//     1 <-> 1
+//     2 <-> 3, 4, 0
+//     3 <-> 2, 4
+//     4 <-> 2, 3, 6
+//     5 <-> 6
+//     6 <-> 4, 5
+//   `
 //     .trim()
 //     .split('\n')
 //     .map(s => program.tryParse(s.trim()))
-//   )
-// ).size);
-
-console.log('contain zero:', groupZero(input).size);
+// );
+// console.log(groupN(0, example));
+//
+// console.log('0', groupN(0, example));
+// console.log('1', groupN(1, example));
+// console.log('2', groupN(2, example));
+// console.log('3', groupN(3, example));
+// console.log(allGroups(example).length);
